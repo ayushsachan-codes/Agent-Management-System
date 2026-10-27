@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incentives & Recognition - AgentPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside id="app-sidebar"></aside>
+
+    <main class="app-main">
+      <header id="app-topbar"></header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1><i class="fa-solid fa-trophy" style="color: var(--primary);"></i> Incentive Programs & Recognition Wall</h1>
+            <p class="page-subtitle">Motivate agents through high-stakes sales sprint campaigns, cash rewards, and honors recognition.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="openModal('create-incentive-modal')">
+              <i class="fa-solid fa-plus-circle"></i> Launch New Incentive
+            </button>
+          </div>
+        </div>
+
+        <!-- Recognition Wall -->
+        <div style="margin-bottom: 34px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="font-size: 19px; font-weight: 700;">
+              <i class="fa-solid fa-star" style="color: #f59e0b;"></i> Agency Honors & Hall of Fame
+            </h2>
+            <span class="badge badge-gold">Updated for Q3/Q4 2026</span>
+          </div>
+
+          <div id="recognition-wall">
+            <!-- Loaded by incentives.js -->
+          </div>
+        </div>
+
+        <!-- Active Incentive Programs -->
+        <div style="margin-bottom: 30px;">
+          <h2 style="font-size: 19px; font-weight: 700; margin-bottom: 16px;">
+            <i class="fa-solid fa-gift" style="color: var(--primary);"></i> Active Incentive Campaigns & Milestones
+          </h2>
+
+          <div id="incentives-list-container">
+            <!-- Loaded by incentives.js -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create Incentive Modal -->
+  <div class="modal-overlay" id="create-incentive-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-trophy" style="color: var(--primary);"></i> Launch New Incentive Program</h3>
+        <button class="modal-close-btn" onclick="closeModal('create-incentive-modal')">&times;</button>
+      </div>
+      <form id="create-incentive-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="inc-name">Program Title <span class="required">*</span></label>
+            <input type="text" id="inc-name" class="form-control" placeholder="e.g. Year-End Holiday Sprint" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inc-criteria">Qualification Criteria <span class="required">*</span></label>
+            <textarea id="inc-criteria" class="form-control" rows="2" placeholder="e.g. Sell 10 Life or Health policies before Dec 31" required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="inc-target">Target Metric <span class="required">*</span></label>
+              <input type="text" id="inc-target" class="form-control" placeholder="e.g. $40,000 Premium" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inc-reward">Reward Description <span class="required">*</span></label>
+              <input type="text" id="inc-reward" class="form-control" placeholder="e.g. $5,000 Cash Bonus" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="inc-start">Start Date <span class="required">*</span></label>
+              <input type="date" id="inc-start" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inc-end">End Date <span class="required">*</span></label>
+              <input type="date" id="inc-end" class="form-control" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('create-incentive-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Publish Incentive</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Grant Achievement Modal -->
+  <div class="modal-overlay" id="grant-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-award" style="color: var(--primary);"></i> Grant Milestone to Agent</h3>
+        <button class="modal-close-btn" onclick="closeModal('grant-modal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="grant-agent-select">Select Qualifying Agent</label>
+          <select id="grant-agent-select" class="form-control"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('grant-modal')">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="handleGrantAchievement()">Confirm Achievement</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/incentives.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('incentives');
+      initIncentivesPage();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('inc-start').value = today;
+      const end = new Date();
+      end.setMonth(end.getMonth() + 2);
+      document.getElementById('inc-end').value = end.toISOString().split('T')[0];
+    });
+  </script>
+</body>
+</html>

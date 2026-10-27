@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Onboarding Registration - AgentPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <style>
+    .form-section-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .form-section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+    }
+    .form-feedback-error {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside id="app-sidebar"></aside>
+
+    <main class="app-main">
+      <header id="app-topbar"></header>
+
+      <div class="page-content" style="max-width: 900px; margin: 0 auto;">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Onboard New Insurance Agent</h1>
+            <p class="page-subtitle">Register a new agent into the network. New recruits are automatically enrolled in the 'In Training' program.</p>
+          </div>
+          <div class="page-actions">
+            <a href="agents.html" class="btn btn-outline">
+              <i class="fa-solid fa-arrow-left"></i> Back to Agents
+            </a>
+          </div>
+        </div>
+
+        <form id="agent-registration-form" novalidate>
+          <!-- Section 1: Personal Details -->
+          <div class="form-section-card">
+            <div class="form-section-title">
+              <i class="fa-solid fa-user" style="color: var(--primary);"></i>
+              <span>1. Personal Information</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label" for="reg-name">Full Legal Name <span class="required">*</span></label>
+                <input type="text" id="reg-name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+                <div class="form-feedback-error" id="err-name">Full name is required.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-dob">Date of Birth <span class="required">*</span></label>
+                <input type="date" id="reg-dob" class="form-control" required>
+                <div class="form-feedback-error" id="err-dob">Valid date of birth required (must be 18+).</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-gender">Gender <span class="required">*</span></label>
+                <select id="reg-gender" class="form-control" required>
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other / Non-binary</option>
+                </select>
+                <div class="form-feedback-error" id="err-gender">Please select gender.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-photo">Photo URL (Optional)</label>
+                <input type="url" id="reg-photo" class="form-control" placeholder="https://images.unsplash.com/...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Contact Details -->
+          <div class="form-section-card">
+            <div class="form-section-title">
+              <i class="fa-solid fa-address-book" style="color: var(--primary);"></i>
+              <span>2. Contact & Address Details</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-email">Email Address <span class="required">*</span></label>
+                <input type="email" id="reg-email" class="form-control" placeholder="agent.name@insurance.com" required>
+                <div class="form-feedback-error" id="err-email">Please enter a valid email address.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-phone">Phone Number (10 digits) <span class="required">*</span></label>
+                <input type="tel" id="reg-phone" class="form-control" placeholder="9876543210" maxlength="10" required>
+                <div class="form-feedback-error" id="err-phone">Phone number must be exactly 10 digits.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reg-address">Street Address</label>
+              <input type="text" id="reg-address" class="form-control" placeholder="Flat No., Building, Street Area">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-city">City <span class="required">*</span></label>
+                <input type="text" id="reg-city" class="form-control" placeholder="e.g. Pune" required>
+                <div class="form-feedback-error" id="err-city">City is required.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-state">State <span class="required">*</span></label>
+                <input type="text" id="reg-state" class="form-control" placeholder="e.g. Maharashtra" required>
+                <div class="form-feedback-error" id="err-state">State is required.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-pincode">PIN / Postal Code</label>
+                <input type="text" id="reg-pincode" class="form-control" placeholder="e.g. 411001">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Professional Credentials & Placement -->
+          <div class="form-section-card">
+            <div class="form-section-title">
+              <i class="fa-solid fa-briefcase" style="color: var(--primary);"></i>
+              <span>3. Professional Details & Licensing</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-license">License Number <span class="required">*</span></label>
+                <input type="text" id="reg-license" class="form-control" placeholder="e.g. INS-MH-994821" required>
+                <div class="form-feedback-error" id="err-license">License number is required and must be unique.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-license-expiry">License Expiry Date <span class="required">*</span></label>
+                <input type="date" id="reg-license-expiry" class="form-control" required>
+                <div class="form-feedback-error" id="err-license-expiry">License expiry date is required.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-experience">Experience (Years) <span class="required">*</span></label>
+                <input type="number" id="reg-experience" class="form-control" min="0" max="40" value="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-specialization">Specialization <span class="required">*</span></label>
+                <select id="reg-specialization" class="form-control" required>
+                  <option value="Life">Life Insurance</option>
+                  <option value="Health">Health Insurance</option>
+                  <option value="Motor">Motor Insurance</option>
+                  <option value="Property">Property & Casualty</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="reg-manager">Reporting Manager <span class="required">*</span></label>
+                <select id="reg-manager" class="form-control" required>
+                  <option value="MGR-001">Rajesh Sharma (Agency Director)</option>
+                  <option value="MGR-002">Alok Mathur (Regional VP)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-joindate">Joining Date <span class="required">*</span></label>
+                <input type="date" id="reg-joindate" class="form-control" required>
+                <div class="form-feedback-error" id="err-joindate">Joining date is required.</div>
+              </div>
+            </div>
+
+            <div style="background-color: var(--primary-subtle); border: 1px solid var(--primary-light); padding: 14px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+              <i class="fa-solid fa-circle-info" style="color: var(--primary-dark); font-size: 20px;"></i>
+              <div style="font-size: 13px; color: var(--text-main);">
+                <strong>Automatic Status Assignment:</strong> In accordance with company policy, newly registered agents default to <strong>In Training</strong> status and are assigned the <strong>Rising Star / Bronze</strong> track until mandatory induction training is completed.
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 14px; margin-bottom: 40px;">
+            <button type="reset" class="btn btn-outline">Reset Form</button>
+            <button type="submit" class="btn btn-primary" style="padding: 12px 28px; font-size: 15px;">
+              <i class="fa-solid fa-circle-check"></i> Complete Agent Onboarding
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('register-agent');
+
+      // Set default joining date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('reg-joindate').value = today;
+
+      // Handle Form Submission
+      const form = document.getElementById('agent-registration-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (validateForm()) {
+          saveNewAgent();
+        }
+      });
+    });
+
+    function validateForm() {
+      let isValid = true;
+      const hideErr = (id) => { document.getElementById(id).style.display = 'none'; };
+      const showErr = (id) => { document.getElementById(id).style.display = 'block'; isValid = false; };
+
+      // Name
+      const name = document.getElementById('reg-name').value.trim();
+      if (!name) showErr('err-name'); else hideErr('err-name');
+
+      // DOB
+      const dob = document.getElementById('reg-dob').value;
+      if (!dob) {
+        showErr('err-dob');
+      } else {
+        const age = (new Date() - new Date(dob)) / (365.25 * 24 * 60 * 60 * 1000);
+        if (age < 18) showErr('err-dob'); else hideErr('err-dob');
+      }
+
+      // Gender
+      const gender = document.getElementById('reg-gender').value;
+      if (!gender) showErr('err-gender'); else hideErr('err-gender');
+
+      // Email
+      const email = document.getElementById('reg-email').value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) showErr('err-email'); else hideErr('err-email');
+
+      // Phone (10 digits)
+      const phone = document.getElementById('reg-phone').value.trim();
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(phone)) showErr('err-phone'); else hideErr('err-phone');
+
+      // City & State
+      const city = document.getElementById('reg-city').value.trim();
+      if (!city) showErr('err-city'); else hideErr('err-city');
+
+      const state = document.getElementById('reg-state').value.trim();
+      if (!state) showErr('err-state'); else hideErr('err-state');
+
+      // License & Uniqueness
+      const license = document.getElementById('reg-license').value.trim();
+      const existingAgents = AgentProDB.getAgents();
+      const isDuplicate = existingAgents.some(a => a.licenseNo && a.licenseNo.toLowerCase() === license.toLowerCase());
+
+      if (!license || isDuplicate) {
+        const errEl = document.getElementById('err-license');
+        errEl.textContent = isDuplicate ? 'This license number is already assigned to another agent.' : 'License number is required.';
+        showErr('err-license');
+      } else {
+        hideErr('err-license');
+      }
+
+      // License expiry
+      const expiry = document.getElementById('reg-license-expiry').value;
+      if (!expiry) showErr('err-license-expiry'); else hideErr('err-license-expiry');
+
+      return isValid;
+    }
+
+    function saveNewAgent() {
+      const existingAgents = AgentProDB.getAgents();
+      const nextId = `AGT-${1000 + existingAgents.length + 1}`;
+
+      const avatarList = [
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
+      ];
+      const customPhoto = document.getElementById('reg-photo').value.trim();
+      const photo = customPhoto || avatarList[Math.floor(Math.random() * avatarList.length)];
+
+      const newAgent = {
+        id: nextId,
+        name: document.getElementById('reg-name').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        phone: document.getElementById('reg-phone').value.trim(),
+        dob: document.getElementById('reg-dob').value,
+        gender: document.getElementById('reg-gender').value,
+        city: document.getElementById('reg-city').value.trim(),
+        state: document.getElementById('reg-state').value.trim(),
+        licenseNo: document.getElementById('reg-license').value.trim(),
+        licenseExpiry: document.getElementById('reg-license-expiry').value,
+        experience: Number(document.getElementById('reg-experience').value) || 1,
+        specialization: document.getElementById('reg-specialization').value,
+        managerId: document.getElementById('reg-manager').value,
+        joinDate: document.getElementById('reg-joindate').value,
+        status: "In Training", // PRD default
+        level: "Rising Star",
+        photo: photo
+      };
+
+      // Automatically enroll in Mandatory Induction Training
+      AgentProDB.saveAgent(newAgent);
+      AgentProDB.enrollAgentInTraining("TRN-201", newAgent.id);
+
+      AgentApp.showToast(`Agent ${newAgent.name} successfully registered with ID ${newAgent.id}!`, 'success');
+
+      setTimeout(() => {
+        window.location.href = `agent-detail.html?id=${newAgent.id}`;
+      }, 900);
+    }
+  </script>
+</body>
+</html>

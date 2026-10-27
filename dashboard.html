@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AgentPro Insurance Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Shared Sidebar -->
+    <aside id="app-sidebar"></aside>
+
+    <!-- App Main Area -->
+    <main class="app-main">
+      <!-- Shared Topbar -->
+      <header id="app-topbar"></header>
+
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1><i class="fa-solid fa-gauge-high" style="color: var(--primary);"></i> Network Performance Overview</h1>
+            <p class="page-subtitle">Real-time intelligence on insurance agent onboarding, sales volume, and commissions.</p>
+          </div>
+          <div class="page-actions">
+            <a href="register-agent.html" class="btn btn-primary">
+              <i class="fa-solid fa-user-plus"></i> Add New Agent
+            </a>
+            <a href="reports.html" class="btn btn-outline">
+              <i class="fa-solid fa-file-arrow-down"></i> Generate Report
+            </a>
+          </div>
+        </div>
+
+        <!-- Stat Cards KPI Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Total Agents</div>
+              <div class="stat-value" id="stat-total-agents">0</div>
+              <div class="stat-sub positive"><i class="fa-solid fa-arrow-up"></i> Registered Network</div>
+            </div>
+            <div class="stat-icon-wrap">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Active Agents</div>
+              <div class="stat-value" id="stat-active-agents" style="color: #10b981;">0</div>
+              <div class="stat-sub"><i class="fa-solid fa-certificate"></i> Licensed & Selling</div>
+            </div>
+            <div class="stat-icon-wrap" style="background-color: #dcfce7; color: #15803d;">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">In Training</div>
+              <div class="stat-value" id="stat-training-agents" style="color: #d97706;">0</div>
+              <div class="stat-sub"><i class="fa-solid fa-clock"></i> Onboarding Track</div>
+            </div>
+            <div class="stat-icon-wrap" style="background-color: #fef3c7; color: #b45309;">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Policies Sold</div>
+              <div class="stat-value" id="stat-total-policies">0</div>
+              <div class="stat-sub positive"><i class="fa-solid fa-file-shield"></i> All Policies Active</div>
+            </div>
+            <div class="stat-icon-wrap" style="background-color: #ede9fe; color: #6d28d9;">
+              <i class="fa-solid fa-file-signature"></i>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Total Premium</div>
+              <div class="stat-value" id="stat-total-premium">$0</div>
+              <div class="stat-sub positive"><i class="fa-solid fa-chart-line"></i> Total Revenue</div>
+            </div>
+            <div class="stat-icon-wrap" style="background-color: #dcfce7; color: #047857;">
+              <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Commissions Paid</div>
+              <div class="stat-value" id="stat-total-commissions">$0</div>
+              <div class="stat-sub"><i class="fa-solid fa-wallet"></i> Disbursed Payouts</div>
+            </div>
+            <div class="stat-icon-wrap" style="background-color: #fee2e2; color: #b91c1c;">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-chart-column" style="color: var(--primary);"></i>
+                Commission Overview (Monthly Trend)
+              </div>
+              <span class="badge badge-gold"><i class="fa-regular fa-calendar"></i> 2026 Trend</span>
+            </div>
+            <div class="card-body">
+              <div style="position: relative; height: 280px;">
+                <canvas id="commissionChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i>
+                Level Distribution
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="position: relative; height: 280px;">
+                <canvas id="levelChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard & Recent Activity Grid -->
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+          <!-- Top 5 Leaderboard -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-ranking-star" style="color: #f59e0b;"></i>
+                Top 5 Agent Leaderboard
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-sm btn-amber-light active" id="lead-metric-premium" onclick="setLeaderboardMetric('premium')">By Premium</button>
+                <button class="btn btn-sm btn-outline" id="lead-metric-policies" onclick="setLeaderboardMetric('policies')">By Policies</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Agent</th>
+                      <th>Specialization</th>
+                      <th>Level</th>
+                      <th style="text-align: right;" id="lead-table-col-header">Total Premium</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leaderboard-tbody">
+                    <!-- Loaded dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity Feed -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-bolt" style="color: var(--primary);"></i>
+                Recent Activity
+              </div>
+              <a href="commissions.html" style="font-size: 12.5px; color: var(--primary-dark); font-weight: 600;">View All</a>
+            </div>
+            <div class="card-body" style="padding: 16px;">
+              <div id="recent-activity-list" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('dashboard');
+      initDashboard();
+    });
+
+    let currentLeaderboardMetric = 'premium';
+
+    function initDashboard() {
+      const agents = AgentProDB.getAgents();
+      const policies = AgentProDB.getPolicies();
+      const commissions = AgentProDB.getCommissions();
+
+      // Stats calculation
+      const totalAgents = agents.length;
+      const activeAgents = agents.filter(a => a.status === 'Active' || a.status === 'Top Performer').length;
+      const trainingAgents = agents.filter(a => a.status === 'In Training').length;
+      const totalPolicies = policies.length;
+      const totalPremium = policies.reduce((acc, p) => acc + (p.premium || 0), 0);
+      const paidCommissions = commissions.filter(c => c.status === 'Paid').reduce((acc, c) => acc + (c.amount || 0), 0);
+
+      document.getElementById('stat-total-agents').textContent = totalAgents;
+      document.getElementById('stat-active-agents').textContent = activeAgents;
+      document.getElementById('stat-training-agents').textContent = trainingAgents;
+      document.getElementById('stat-total-policies').textContent = totalPolicies;
+      document.getElementById('stat-total-premium').textContent = AgentProDB.formatCurrency(totalPremium);
+      document.getElementById('stat-total-commissions').textContent = AgentProDB.formatCurrency(paidCommissions);
+
+      renderCommissionChart(commissions);
+      renderLevelChart(agents);
+      renderLeaderboard();
+      renderRecentActivity();
+    }
+
+    // Leaderboard Toggle
+    function setLeaderboardMetric(metric) {
+      currentLeaderboardMetric = metric;
+      document.getElementById('lead-metric-premium').className = metric === 'premium' ? 'btn btn-sm btn-amber-light active' : 'btn btn-sm btn-outline';
+      document.getElementById('lead-metric-policies').className = metric === 'policies' ? 'btn btn-sm btn-amber-light active' : 'btn btn-sm btn-outline';
+      document.getElementById('lead-table-col-header').textContent = metric === 'premium' ? 'Total Premium' : 'Policies Sold';
+      renderLeaderboard();
+    }
+
+    function renderLeaderboard() {
+      const agents = AgentProDB.getAgents();
+      const policies = AgentProDB.getPolicies();
+
+      // Calculate stats per agent
+      const agentStats = agents.map(agent => {
+        const agentPolicies = policies.filter(p => p.agentId === agent.id);
+        const agentPremium = agentPolicies.reduce((sum, p) => sum + (p.premium || 0), 0);
+        return {
+          agent,
+          policiesCount: agentPolicies.length,
+          totalPremium: agentPremium
+        };
+      });
+
+      // Sort
+      if (currentLeaderboardMetric === 'premium') {
+        agentStats.sort((a, b) => b.totalPremium - a.totalPremium);
+      } else {
+        agentStats.sort((a, b) => b.policiesCount - a.policiesCount);
+      }
+
+      const top5 = agentStats.slice(0, 5);
+      const tbody = document.getElementById('leaderboard-tbody');
+      tbody.innerHTML = top5.map((item, idx) => {
+        const rankMedal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+        const val = currentLeaderboardMetric === 'premium' ? AgentProDB.formatCurrency(item.totalPremium) : `${item.policiesCount} Policies`;
+        return `
+          <tr>
+            <td style="font-size: 16px; font-weight: 800; color: var(--text-muted);">${rankMedal}</td>
+            <td>
+              <div class="table-avatar-cell">
+                <img src="${item.agent.photo}" class="table-avatar" alt="${item.agent.name}">
+                <div>
+                  <a href="agent-detail.html?id=${item.agent.id}" style="font-weight: 700; color: var(--text-main); display: block;">${item.agent.name}</a>
+                  <span style="font-size: 11.5px; color: var(--text-light);">${item.agent.id}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge" style="background: var(--surface-alt); border: 1px solid var(--border);">${item.agent.specialization}</span></td>
+            <td>${AgentApp.getLevelBadge(item.agent.level)}</td>
+            <td style="text-align: right; font-weight: 800; font-family: 'Outfit'; color: var(--primary-dark); font-size: 15px;">${val}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderRecentActivity() {
+      const listEl = document.getElementById('recent-activity-list');
+      const items = [
+        { icon: 'fa-user-plus', color: '#10b981', bg: '#dcfce7', title: 'New Agent Onboarded', desc: 'Rohan Kapoor joined Health Division under Vikram M.', time: '2 hours ago' },
+        { icon: 'fa-money-bill-transfer', color: '#f59e0b', bg: '#fef3c7', title: 'Commission Payout Released', desc: '$21,250 disbursed to Vikram Malhotra (TXN-912450)', time: '4 hours ago' },
+        { icon: 'fa-award', color: '#6d28d9', bg: '#ede9fe', title: 'Incentive Achieved!', desc: 'Priya Patel reached Q4 Sprint bonus milestone', time: '1 day ago' },
+        { icon: 'fa-graduation-cap', color: '#0284c7', bg: '#e0f2fe', title: 'Training Completed', desc: 'Commercial Property Risk Assessment concluded (4 agents certified)', time: '2 days ago' }
+      ];
+
+      listEl.innerHTML = items.map(i => `
+        <div style="display: flex; gap: 12px; align-items: flex-start;">
+          <div style="width: 36px; height: 36px; border-radius: var(--radius-md); background: ${i.bg}; color: ${i.color}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px;">
+            <i class="fa-solid ${i.icon}"></i>
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-weight: 600; font-size: 13.5px; color: var(--text-main);">${i.title}</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${i.desc}</div>
+            <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">${i.time}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCommissionChart(commissions) {
+      const ctx = document.getElementById('commissionChart').getContext('2d');
+      // Group paid vs pending
+      const monthlyData = {
+        'Aug 2026': { paid: 53250, pending: 0 },
+        'Sep 2026': { paid: 82450, pending: 5000 },
+        'Oct 2026': { paid: 35000, pending: 90600 }
+      };
+
+      const labels = Object.keys(monthlyData);
+      const paidAmounts = labels.map(l => monthlyData[l].paid);
+      const pendingAmounts = labels.map(l => monthlyData[l].pending);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Paid Commissions ($)',
+              data: paidAmounts,
+              backgroundColor: '#f59e0b',
+              borderRadius: 6
+            },
+            {
+              label: 'Pending Commissions ($)',
+              data: pendingAmounts,
+              backgroundColor: '#fed7aa',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { callback: v => '$' + v.toLocaleString() }
+            }
+          }
+        }
+      });
+    }
+
+    function renderLevelChart(agents) {
+      const ctx = document.getElementById('levelChart').getContext('2d');
+      const counts = { Platinum: 0, Gold: 0, Silver: 0, Bronze: 0, 'Rising Star': 0 };
+      agents.forEach(a => {
+        if (counts[a.level] !== undefined) counts[a.level]++;
+      });
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(counts),
+          datasets: [{
+            data: Object.values(counts),
+            backgroundColor: [
+              '#8b5cf6', // Platinum
+              '#f59e0b', // Gold
+              '#94a3b8', // Silver
+              '#f97316', // Bronze
+              '#06b6d4'  // Rising Star
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          },
+          cutout: '68%'
+        }
+      });
+    }
+  </script>
+</body>
+</html>

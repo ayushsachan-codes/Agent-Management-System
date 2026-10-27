@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Profile - AgentPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <style>
+    .profile-hero {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .profile-hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .profile-main-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .profile-avatar-lg {
+      width: 90px;
+      height: 90px;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+      border: 4px solid var(--primary);
+      box-shadow: var(--shadow-amber);
+    }
+    .profile-tab-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: var(--primary-dark);
+    }
+    .tab-btn.active {
+      color: var(--primary-dark);
+      border-bottom-color: var(--primary);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeInTab 0.25s ease;
+    }
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .info-list-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .info-item-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .info-item-value {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside id="app-sidebar"></aside>
+
+    <main class="app-main">
+      <header id="app-topbar"></header>
+
+      <div class="page-content" id="agent-detail-root">
+        <!-- Will be filled by JavaScript -->
+        <div id="loading-state" style="text-align: center; padding: 60px;">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; color: var(--primary);"></i>
+          <p style="margin-top: 12px; color: var(--text-muted);">Loading agent profile...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Policy Modal -->
+  <div class="modal-overlay" id="add-policy-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Issue New Policy for Agent</h3>
+        <button class="modal-close-btn" onclick="closeModal('add-policy-modal')">&times;</button>
+      </div>
+      <form id="add-policy-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="pol-customer">Customer / Insured Name <span class="required">*</span></label>
+            <input type="text" id="pol-customer" class="form-control" placeholder="e.g. Ramesh Patel" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="pol-type">Policy Type <span class="required">*</span></label>
+              <select id="pol-type" class="form-control" required>
+                <option value="Life">Life (25% FY Comm)</option>
+                <option value="Health">Health (15% FY Comm)</option>
+                <option value="Motor">Motor (10% FY Comm)</option>
+                <option value="Property">Property (12% FY Comm)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pol-is-renewal">Policy Nature <span class="required">*</span></label>
+              <select id="pol-is-renewal" class="form-control" required>
+                <option value="false">New First Year Policy</option>
+                <option value="true">Renewal Policy (5% Comm)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="pol-premium">Annual Premium ($) <span class="required">*</span></label>
+              <input type="number" id="pol-premium" class="form-control" placeholder="e.g. 50000" min="1000" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pol-startdate">Effective Start Date <span class="required">*</span></label>
+              <input type="date" id="pol-startdate" class="form-control" required>
+            </div>
+          </div>
+
+          <div id="policy-commission-preview" style="background-color: var(--primary-light); padding: 12px; border-radius: var(--radius-md); font-size: 13px; color: var(--primary-dark); font-weight: 600;">
+            Estimated Commission: $0.00
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('add-policy-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Issue Policy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Status Modal -->
+  <div class="modal-overlay" id="status-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-user-gear" style="color: var(--primary);"></i> Update Agent Status & Level</h3>
+        <button class="modal-close-btn" onclick="closeModal('status-modal')">&times;</button>
+      </div>
+      <form id="status-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="agent-status-select">Agent Status</label>
+            <select id="agent-status-select" class="form-control">
+              <option value="Active">Active (Licensed & Selling)</option>
+              <option value="In Training">In Training (Onboarding)</option>
+              <option value="Top Performer">Top Performer (Exceptional)</option>
+              <option value="On Leave">On Leave (Temporarily Unavailable)</option>
+              <option value="Inactive">Inactive (Terminated / Not Selling)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agent-level-select">Performance Level</label>
+            <select id="agent-level-select" class="form-control">
+              <option value="Platinum">Platinum (>=150%)</option>
+              <option value="Gold">Gold (120-149%)</option>
+              <option value="Silver">Silver (100-119%)</option>
+              <option value="Bronze">Bronze (70-99%)</option>
+              <option value="Rising Star">Rising Star (Growth Track)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('status-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let currentAgent = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('agent-detail');
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const agentId = urlParams.get('id') || 'AGT-1001';
+      loadAgentProfile(agentId);
+
+      // Bind policy modal calculation preview
+      const premInput = document.getElementById('pol-premium');
+      const typeSelect = document.getElementById('pol-type');
+      const renewalSelect = document.getElementById('pol-is-renewal');
+
+      const updateCalc = () => {
+        const p = Number(premInput.value) || 0;
+        const isRenewal = renewalSelect.value === 'true';
+        const type = typeSelect.value;
+        const calc = AgentProDB.calculateCommission(type, p, isRenewal);
+        document.getElementById('policy-commission-preview').textContent = 
+          `Estimated ${calc.type} (${(calc.rate * 100)}%): ${AgentProDB.formatCurrency(calc.amount)}`;
+      };
+
+      premInput.addEventListener('input', updateCalc);
+      typeSelect.addEventListener('change', updateCalc);
+      renewalSelect.addEventListener('change', updateCalc);
+
+      document.getElementById('add-policy-form').addEventListener('submit', handleAddPolicy);
+      document.getElementById('status-form').addEventListener('submit', handleStatusUpdate);
+    });
+
+    function loadAgentProfile(agentId) {
+      currentAgent = AgentProDB.getAgentById(agentId);
+      const root = document.getElementById('agent-detail-root');
+
+      if (!currentAgent) {
+        root.innerHTML = `
+          <div style="text-align: center; padding: 60px 20px;">
+            <i class="fa-solid fa-user-xmark" style="font-size: 48px; color: #ef4444; margin-bottom: 16px;"></i>
+            <h2>Agent Not Found</h2>
+            <p style="color: var(--text-muted); margin: 8px 0 20px;">No agent exists matching ID ${agentId}.</p>
+            <a href="agents.html" class="btn btn-primary">Back to Agent Directory</a>
+          </div>
+        `;
+        return;
+      }
+
+      const policies = AgentProDB.getPolicies().filter(p => p.agentId === currentAgent.id);
+      const commissions = AgentProDB.getCommissions().filter(c => c.agentId === currentAgent.id);
+      const performance = AgentProDB.getPerformance().filter(p => p.agentId === currentAgent.id);
+      const trainings = AgentProDB.getTrainings().filter(t => t.enrolledAgentIds.includes(currentAgent.id));
+      const certifications = AgentProDB.getCertifications().filter(c => c.agentId === currentAgent.id);
+
+      const totalPremium = policies.reduce((sum, p) => sum + (p.premium || 0), 0);
+      const totalCommission = commissions.reduce((sum, c) => sum + (c.amount || 0), 0);
+      const latestPerf = performance[0] || { targetPremium: 100000, achievedPremium: totalPremium, achievementPct: 100 };
+
+      const isLicenseExpired = new Date(currentAgent.licenseExpiry) < new Date();
+
+      root.innerHTML = `
+        <!-- Profile Hero Header -->
+        <div class="profile-hero">
+          <div class="profile-hero-top">
+            <div class="profile-main-info">
+              <img src="${currentAgent.photo}" alt="${currentAgent.name}" class="profile-avatar-lg">
+              <div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                  <h1 style="font-size: 26px; font-weight: 800; margin: 0;">${currentAgent.name}</h1>
+                  ${AgentApp.getStatusBadge(currentAgent.status)}
+                  ${AgentApp.getLevelBadge(currentAgent.level)}
+                  ${isLicenseExpired ? '<span class="badge" style="background: #fee2e2; color: #b91c1c;"><i class="fa-solid fa-triangle-exclamation"></i> License Expired</span>' : ''}
+                </div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                  <span><i class="fa-solid fa-id-card" style="color: var(--text-light);"></i> <strong>ID:</strong> ${currentAgent.id}</span>
+                  <span><i class="fa-solid fa-shield" style="color: var(--text-light);"></i> <strong>License:</strong> ${currentAgent.licenseNo}</span>
+                  <span><i class="fa-solid fa-briefcase" style="color: var(--text-light);"></i> <strong>Focus:</strong> ${currentAgent.specialization} Insurance</span>
+                  <span><i class="fa-solid fa-calendar" style="color: var(--text-light);"></i> <strong>Joined:</strong> ${currentAgent.joinDate}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="openAddPolicyModal()" ${currentAgent.status === 'Inactive' ? 'disabled title="Inactive agents cannot issue policies"' : ''}>
+                <i class="fa-solid fa-plus"></i> Issue New Policy
+              </button>
+              <button class="btn btn-outline" onclick="openStatusModal()">
+                <i class="fa-solid fa-sliders"></i> Change Status
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Quick Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Total Premium Generated</div>
+              <div class="stat-value" style="color: var(--primary-dark);">${AgentProDB.formatCurrency(totalPremium)}</div>
+              <div class="stat-sub positive"><i class="fa-solid fa-arrow-trend-up"></i> Lifetime sales</div>
+            </div>
+            <div class="stat-icon-wrap"><i class="fa-solid fa-dollar-sign"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Policies Issued</div>
+              <div class="stat-value">${policies.length}</div>
+              <div class="stat-sub"><i class="fa-solid fa-file-shield"></i> Active books</div>
+            </div>
+            <div class="stat-icon-wrap" style="background: #ede9fe; color: #6d28d9;"><i class="fa-solid fa-file-invoice"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Total Commission Earned</div>
+              <div class="stat-value" style="color: #10b981;">${AgentProDB.formatCurrency(totalCommission)}</div>
+              <div class="stat-sub"><i class="fa-solid fa-wallet"></i> Gross payouts</div>
+            </div>
+            <div class="stat-icon-wrap" style="background: #dcfce7; color: #15803d;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Target Achievement</div>
+              <div class="stat-value">${latestPerf.achievementPct.toFixed(1)}%</div>
+              <div class="stat-sub positive"><i class="fa-solid fa-bullseye"></i> Current cycle</div>
+            </div>
+            <div class="stat-icon-wrap" style="background: #cffafe; color: #0e7490;"><i class="fa-solid fa-award"></i></div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="profile-tab-bar">
+          <button class="tab-btn active" onclick="switchTab('tab-overview', this)">
+            <i class="fa-regular fa-id-card"></i> Overview
+          </button>
+          <button class="tab-btn" onclick="switchTab('tab-policies', this)">
+            <i class="fa-solid fa-file-shield"></i> Policies Sold (${policies.length})
+          </button>
+          <button class="tab-btn" onclick="switchTab('tab-commissions', this)">
+            <i class="fa-solid fa-receipt"></i> Commission History (${commissions.length})
+          </button>
+          <button class="tab-btn" onclick="switchTab('tab-performance', this)">
+            <i class="fa-solid fa-chart-line"></i> Performance & Targets
+          </button>
+          <button class="tab-btn" onclick="switchTab('tab-training', this)">
+            <i class="fa-solid fa-graduation-cap"></i> Training & Certs (${trainings.length + certifications.length})
+          </button>
+        </div>
+
+        <!-- Tab 1: Overview -->
+        <div id="tab-overview" class="tab-content active">
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-user-check" style="color: var(--primary);"></i> Agent Profile Information</div>
+              </div>
+              <div class="card-body">
+                <div class="info-list-grid">
+                  <div class="info-item">
+                    <span class="info-item-label">Legal Name</span>
+                    <span class="info-item-value">${currentAgent.name}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Date of Birth</span>
+                    <span class="info-item-value">${currentAgent.dob || 'N/A'}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Gender</span>
+                    <span class="info-item-value">${currentAgent.gender || 'N/A'}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Experience</span>
+                    <span class="info-item-value">${currentAgent.experience} Years</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Primary Email</span>
+                    <span class="info-item-value"><a href="mailto:${currentAgent.email}">${currentAgent.email}</a></span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Phone Contact</span>
+                    <span class="info-item-value"><a href="tel:${currentAgent.phone}">${currentAgent.phone}</a></span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Operating City</span>
+                    <span class="info-item-value">${currentAgent.city}, ${currentAgent.state}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-item-label">Specialization Branch</span>
+                    <span class="info-item-value">${currentAgent.specialization} Insurance</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-sitemap" style="color: var(--primary);"></i> Agency Hierarchy</div>
+              </div>
+              <div class="card-body">
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                  <div>
+                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Reporting Manager</div>
+                    <div style="font-weight: 700; font-size: 15px; margin-top: 2px;">Rajesh Sharma (Agency Director)</div>
+                    <div style="font-size: 12px; color: var(--text-light);">Team Lead ID: ${currentAgent.managerId}</div>
+                  </div>
+                  <hr style="border: none; border-top: 1px solid var(--border);">
+                  <div>
+                    <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">License Compliance</div>
+                    <div style="font-size: 13.5px; font-weight: 600; margin-top: 2px;">No: ${currentAgent.licenseNo}</div>
+                    <div style="font-size: 12.5px; color: ${isLicenseExpired ? '#ef4444' : '#10b981'}; font-weight: 600; margin-top: 2px;">
+                      Expires: ${currentAgent.licenseExpiry} ${isLicenseExpired ? '(EXPIRED)' : '(Valid)'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Policies Sold -->
+        <div id="tab-policies" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-file-contract" style="color: var(--primary);"></i> Policies Underwritten by Agent</div>
+              <button class="btn btn-sm btn-primary" onclick="openAddPolicyModal()"><i class="fa-solid fa-plus"></i> New Policy</button>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Policy ID</th>
+                      <th>Customer Name</th>
+                      <th>Type</th>
+                      <th>Nature</th>
+                      <th>Premium</th>
+                      <th>Issue Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${policies.length === 0 ? '<tr><td colspan="6" style="text-align: center; padding: 30px;">No policies issued yet.</td></tr>' : 
+                      policies.map(p => `
+                        <tr>
+                          <td style="font-family: monospace; font-weight: 700;">${p.id}</td>
+                          <td style="font-weight: 600;">${p.customerName}</td>
+                          <td><span class="badge" style="background: var(--surface-alt); border: 1px solid var(--border);">${p.policyType}</span></td>
+                          <td>${p.isRenewal ? '<span class="badge badge-silver">Renewal</span>' : '<span class="badge badge-gold">First Year</span>'}</td>
+                          <td style="font-weight: 800; font-family: 'Outfit'; color: var(--primary-dark);">${AgentProDB.formatCurrency(p.premium)}</td>
+                          <td>${p.startDate}</td>
+                        </tr>
+                      `).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Commission History -->
+        <div id="tab-commissions" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-coins" style="color: var(--primary);"></i> Commission Payout Statements</div>
+              <span class="badge badge-gold">Total: ${AgentProDB.formatCurrency(totalCommission)}</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Ref ID</th>
+                      <th>Type</th>
+                      <th>Policy</th>
+                      <th>Premium Base</th>
+                      <th>Rate</th>
+                      <th>Commission Amount</th>
+                      <th>Month</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${commissions.length === 0 ? '<tr><td colspan="8" style="text-align: center; padding: 30px;">No commissions recorded yet.</td></tr>' :
+                      commissions.map(c => `
+                        <tr>
+                          <td style="font-family: monospace; font-weight: 700;">${c.id}</td>
+                          <td style="font-weight: 600;">${c.type}</td>
+                          <td>${c.policyId || 'Bonus Award'}</td>
+                          <td>${c.premium ? AgentProDB.formatCurrency(c.premium) : '—'}</td>
+                          <td>${c.rate ? (c.rate * 100) + '%' : 'Fixed'}</td>
+                          <td style="font-weight: 800; font-family: 'Outfit'; color: var(--primary-dark); font-size: 15px;">${AgentProDB.formatCurrency(c.amount)}</td>
+                          <td>${c.month}</td>
+                          <td>
+                            ${c.status === 'Paid' ? 
+                              '<span class="badge badge-active"><i class="fa-solid fa-check"></i> Paid</span>' : 
+                              '<span class="badge badge-training"><i class="fa-solid fa-clock"></i> Pending</span>'}
+                          </td>
+                        </tr>
+                      `).join('')
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Performance & Targets -->
+        <div id="tab-performance" class="tab-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fa-solid fa-bullseye" style="color: var(--primary);"></i> Targets vs Realized Achievement</div>
+            </div>
+            <div class="card-body">
+              ${performance.length === 0 ? '<p style="text-align: center; color: var(--text-muted); padding: 30px;">No performance records for this period.</p>' :
+                performance.map(pf => {
+                  const pct = Math.min(Math.round(pf.achievementPct), 100);
+                  const isAchieved = pf.achievementPct >= 100;
+                  return `
+                    <div style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px;">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="font-size: 16px; font-weight: 700;">Period: ${pf.period}</h4>
+                        <span class="badge ${isAchieved ? 'badge-active' : 'badge-training'}">
+                          ${isAchieved ? '<i class="fa-solid fa-check-double"></i> Target Exceeded' : '<i class="fa-solid fa-spinner"></i> In Progress'}
+                        </span>
+                      </div>
+
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 14px;">
+                        <div>
+                          <div style="font-size: 12px; color: var(--text-muted);">Target Premium:</div>
+                          <div style="font-weight: 700; font-size: 16px;">${AgentProDB.formatCurrency(pf.targetPremium)}</div>
+                        </div>
+                        <div>
+                          <div style="font-size: 12px; color: var(--text-muted);">Achieved Premium:</div>
+                          <div style="font-weight: 800; font-size: 18px; color: var(--primary-dark); font-family: 'Outfit';">${AgentProDB.formatCurrency(pf.achievedPremium)}</div>
+                        </div>
+                        <div>
+                          <div style="font-size: 12px; color: var(--text-muted);">Policies Target:</div>
+                          <div style="font-weight: 700; font-size: 16px;">${pf.achievedPolicies} / ${pf.targetPolicies}</div>
+                        </div>
+                      </div>
+
+                      <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text-muted);">
+                        <span>Progress</span>
+                        <span>${pf.achievementPct.toFixed(1)}%</span>
+                      </div>
+                      <div class="progress-container" style="height: 10px;">
+                        <div class="progress-bar" style="width: ${pct}%;"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Training & Certifications -->
+        <div id="tab-training" class="tab-content">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-graduation-cap" style="color: var(--primary);"></i> Enrolled Training Programs</div>
+              </div>
+              <div class="card-body">
+                ${trainings.length === 0 ? '<p style="color: var(--text-muted);">No enrolled training programs.</p>' :
+                  trainings.map(t => `
+                    <div style="padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px;">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h4 style="font-size: 14.5px; font-weight: 700;">${t.title}</h4>
+                        <span class="badge ${t.status === 'Completed' ? 'badge-active' : 'badge-training'}">${t.status}</span>
+                      </div>
+                      <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                        Trainer: ${t.trainer} • Duration: ${t.duration}
+                      </div>
+                    </div>
+                  `).join('')
+                }
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="fa-solid fa-certificate" style="color: var(--primary);"></i> License & Certifications</div>
+              </div>
+              <div class="card-body">
+                ${certifications.length === 0 ? '<p style="color: var(--text-muted);">No certifications recorded.</p>' :
+                  certifications.map(crt => {
+                    const isExp = new Date(crt.expiryDate) < new Date();
+                    return `
+                      <div style="padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between;">
+                          <strong style="font-size: 14px;">${crt.name}</strong>
+                          <span class="badge ${isExp ? 'badge-inactive' : 'badge-active'}">${isExp ? 'Expired' : 'Active'}</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                          Issued: ${crt.issueDate} | Expiry: ${crt.expiryDate}
+                        </div>
+                      </div>
+                    `;
+                  }).join('')
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function openAddPolicyModal() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('pol-startdate').value = today;
+      document.getElementById('pol-customer').value = '';
+      document.getElementById('pol-premium').value = '';
+      openModal('add-policy-modal');
+    }
+
+    function handleAddPolicy(e) {
+      e.preventDefault();
+      if (!currentAgent) return;
+
+      const customer = document.getElementById('pol-customer').value.trim();
+      const type = document.getElementById('pol-type').value;
+      const isRenewal = document.getElementById('pol-is-renewal').value === 'true';
+      const premium = Number(document.getElementById('pol-premium').value);
+      const startDate = document.getElementById('pol-startdate').value;
+
+      const newPolicy = {
+        id: `POL-${Math.floor(5100 + Math.random() * 4800)}`,
+        agentId: currentAgent.id,
+        policyType: type,
+        customerName: customer,
+        premium: premium,
+        startDate: startDate,
+        isRenewal: isRenewal
+      };
+
+      // Auto Commission Calculation per PRD rules
+      const commCalc = AgentProDB.calculateCommission(type, premium, isRenewal);
+      const currentMonth = startDate.substring(0, 7);
+
+      const newComm = {
+        id: `COM-${Math.floor(7100 + Math.random() * 2800)}`,
+        agentId: currentAgent.id,
+        policyId: newPolicy.id,
+        type: commCalc.type,
+        premium: premium,
+        rate: commCalc.rate,
+        amount: commCalc.amount,
+        month: currentMonth,
+        status: "Pending", // PRD: Created as Pending
+        paidDate: null,
+        reference: null
+      };
+
+      AgentProDB.addPolicy(newPolicy);
+      AgentProDB.addCommission(newComm);
+
+      closeModal('add-policy-modal');
+      AgentApp.showToast(`Policy ${newPolicy.id} created! Commission of ${AgentProDB.formatCurrency(commCalc.amount)} logged as Pending.`, 'success');
+
+      // Reload agent profile
+      loadAgentProfile(currentAgent.id);
+    }
+
+    function openStatusModal() {
+      if (!currentAgent) return;
+      document.getElementById('agent-status-select').value = currentAgent.status;
+      document.getElementById('agent-level-select').value = currentAgent.level;
+      openModal('status-modal');
+    }
+
+    function handleStatusUpdate(e) {
+      e.preventDefault();
+      if (!currentAgent) return;
+
+      currentAgent.status = document.getElementById('agent-status-select').value;
+      currentAgent.level = document.getElementById('agent-level-select').value;
+      AgentProDB.saveAgent(currentAgent);
+
+      closeModal('status-modal');
+      AgentApp.showToast(`Status and level updated for ${currentAgent.name}!`, 'success');
+      loadAgentProfile(currentAgent.id);
+    }
+  </script>
+</body>
+</html>

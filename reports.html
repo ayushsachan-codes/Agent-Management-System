@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports & Financial Exports - AgentPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <style>
+    @media print {
+      body {
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+      .app-sidebar,
+      .app-topbar,
+      .page-actions,
+      .report-controls-card,
+      .brand-badge,
+      .toast-container {
+        display: none !important;
+      }
+      .app-main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .page-content {
+        padding: 0 !important;
+      }
+      .card {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .print-header {
+        display: block !important;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #000;
+      }
+    }
+    .print-header {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside id="app-sidebar"></aside>
+
+    <main class="app-main">
+      <header id="app-topbar"></header>
+
+      <div class="page-content">
+        <!-- Print Header for PDF / Printer -->
+        <div class="print-header">
+          <h2 style="font-size: 22px; font-weight: 800;">AgentPro Insurance Network - Official Report</h2>
+          <p style="font-size: 12px; color: #555;">Generated on <span id="print-date"></span></p>
+        </div>
+
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1><i class="fa-solid fa-file-invoice-dollar" style="color: var(--primary);"></i> Management Reports & Financial Exports</h1>
+            <p class="page-subtitle">Generate tabular statements with automatic totals summary. Export cleanly to CSV or printable PDF.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-outline" id="btn-export-pdf">
+              <i class="fa-solid fa-file-pdf"></i> Export PDF / Print
+            </button>
+            <button class="btn btn-primary" id="btn-export-csv">
+              <i class="fa-solid fa-file-csv"></i> Download CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Report Parameters & Filter Toolbar -->
+        <div class="card report-controls-card" style="margin-bottom: 24px; padding: 20px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: flex-end;">
+            <div>
+              <label class="form-label" for="report-type" style="font-size: 11px; text-transform: uppercase;">Select Report Subject</label>
+              <select id="report-type" class="form-control" style="font-weight: 700;">
+                <option value="agents">Agent Network Directory Report</option>
+                <option value="commissions">Commission Disbursements Report</option>
+                <option value="performance">Sales Target & Achievement Report</option>
+              </select>
+            </div>
+
+            <div id="filter-wrap-status">
+              <label class="form-label" for="report-status-filter" style="font-size: 11px; text-transform: uppercase;">Agent Status</label>
+              <select id="report-status-filter" class="form-control">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Top Performer">Top Performer</option>
+                <option value="In Training">In Training</option>
+                <option value="On Leave">On Leave</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div id="filter-wrap-level">
+              <label class="form-label" for="report-level-filter" style="font-size: 11px; text-transform: uppercase;">Performance Level</label>
+              <select id="report-level-filter" class="form-control">
+                <option value="">All Levels</option>
+                <option value="Platinum">Platinum</option>
+                <option value="Gold">Gold</option>
+                <option value="Silver">Silver</option>
+                <option value="Bronze">Bronze</option>
+                <option value="Rising Star">Rising Star</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label" for="report-agent-filter" style="font-size: 11px; text-transform: uppercase;">Filter by Specific Agent</label>
+              <select id="report-agent-filter" class="form-control">
+                <option value="">All Network Agents</option>
+              </select>
+            </div>
+
+            <div id="filter-wrap-dates" style="display: flex; gap: 8px;">
+              <div>
+                <label class="form-label" for="report-date-start" style="font-size: 11px; text-transform: uppercase;">From</label>
+                <input type="month" id="report-date-start" class="form-control" value="2026-08">
+              </div>
+              <div>
+                <label class="form-label" for="report-date-end" style="font-size: 11px; text-transform: uppercase;">To</label>
+                <input type="month" id="report-date-end" class="form-control" value="2026-10">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Report Preview Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-table-list" style="color: var(--primary);"></i> Live Report Preview & Totals
+            </div>
+            <span class="badge badge-gold"><i class="fa-solid fa-calculator"></i> Real-time Totals Computed</span>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive" id="report-table-wrapper">
+              <!-- Loaded by reports.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/reports.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('reports');
+      initReportsPage();
+      document.getElementById('print-date').textContent = new Date().toLocaleString();
+    });
+  </script>
+</body>
+</html>

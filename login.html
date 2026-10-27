@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - AgentPro Insurance Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <style>
+    .auth-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0b0f19 0%, #172033 50%, #1f293d 100%);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-bg-blob {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0) 70%);
+      top: -100px;
+      right: -100px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .auth-card {
+      background-color: var(--surface);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      max-width: 460px;
+      width: 100%;
+      padding: 38px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-logo-badge {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-lg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      box-shadow: var(--shadow-amber);
+      margin-bottom: 14px;
+    }
+
+    .auth-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .auth-desc {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      margin-top: 4px;
+    }
+
+    .demo-accounts-box {
+      margin-top: 24px;
+      padding: 16px;
+      background-color: var(--surface-alt);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border);
+    }
+
+    .demo-title {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .demo-btns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .demo-pill-btn {
+      padding: 6px 4px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .demo-pill-btn:hover {
+      border-color: var(--primary);
+      background-color: var(--primary-subtle);
+      color: var(--primary-dark);
+    }
+
+    .auth-alert {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .auth-alert.error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page-wrapper">
+    <div class="auth-bg-blob"></div>
+
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h1 class="auth-title">Welcome to AgentPro</h1>
+        <p class="auth-desc">Insurance Agent Lifecycle & Commission Management</p>
+      </div>
+
+      <div id="auth-alert" class="auth-alert"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address <span class="required">*</span></label>
+          <div style="position: relative;">
+            <input type="email" id="login-email" class="form-control" placeholder="admin@agentpro.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" for="login-password" style="margin-bottom: 0;">Password <span class="required">*</span></label>
+            <a href="javascript:void(0)" onclick="alert('Demo Mode: Click any 1-Click Demo Account below to instantly sign in!')" style="font-size: 12px; color: var(--primary);">Forgot password?</a>
+          </div>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14.5px; margin-top: 6px;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal
+        </button>
+      </form>
+
+      <div class="demo-accounts-box">
+        <div class="demo-title">
+          <i class="fa-solid fa-bolt"></i> 1-Click Demo Login
+        </div>
+        <div class="demo-btns-grid">
+          <button type="button" class="demo-pill-btn" onclick="fillDemo('admin@agentpro.com', 'admin123')">
+            <i class="fa-solid fa-user-shield"></i><br>Admin
+          </button>
+          <button type="button" class="demo-pill-btn" onclick="fillDemo('manager@agentpro.com', 'manager123')">
+            <i class="fa-solid fa-user-tie"></i><br>Manager
+          </button>
+          <button type="button" class="demo-pill-btn" onclick="fillDemo('agent@agentpro.com', 'agent123')">
+            <i class="fa-solid fa-id-badge"></i><br>Agent
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 24px; font-size: 13.5px; color: var(--text-muted);">
+        Don't have an account? <a href="signup.html" style="color: var(--primary-dark); font-weight: 700;">Create an account</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Theme sync
+    if (localStorage.getItem('agentpro_theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+
+    // Auto redirect if already authenticated
+    if (AgentAuth.isAuthenticated()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    function fillDemo(email, pass) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
+      document.getElementById('login-form').dispatchEvent(new Event('submit'));
+    }
+
+    const form = document.getElementById('login-form');
+    const alertBox = document.getElementById('auth-alert');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+
+      const email = document.getElementById('login-email').value;
+      const pass = document.getElementById('login-password').value;
+
+      const res = AgentAuth.login(email, pass);
+      if (res.success) {
+        const redirect = sessionStorage.getItem('agentpro_redirect') || 'dashboard.html';
+        sessionStorage.removeItem('agentpro_redirect');
+        window.location.href = redirect;
+      } else {
+        alertBox.className = 'auth-alert error';
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>${res.message}</span>`;
+        alertBox.style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>

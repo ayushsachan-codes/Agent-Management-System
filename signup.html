@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - AgentPro Insurance Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <style>
+    .auth-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0b0f19 0%, #172033 50%, #1f293d 100%);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card {
+      background-color: var(--surface);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      max-width: 480px;
+      width: 100%;
+      padding: 38px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .auth-logo-badge {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: var(--radius-lg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      box-shadow: var(--shadow-amber);
+      margin-bottom: 12px;
+    }
+
+    .auth-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .auth-desc {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      margin-top: 4px;
+    }
+
+    .auth-alert {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .auth-alert.error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h1 class="auth-title">Create an Account</h1>
+        <p class="auth-desc">Register for AgentPro portal access</p>
+      </div>
+
+      <div id="auth-alert" class="auth-alert"></div>
+
+      <form id="signup-form">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name <span class="required">*</span></label>
+          <input type="text" id="reg-name" class="form-control" placeholder="e.g. Rachel Adams" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Work Email <span class="required">*</span></label>
+          <input type="email" id="reg-email" class="form-control" placeholder="rachel.adams@agentpro.com" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-role">System Role <span class="required">*</span></label>
+            <select id="reg-role" class="form-control" required>
+              <option value="agent">Licensed Agent</option>
+              <option value="manager">Manager / Team Lead</option>
+              <option value="admin">HR / Back-office Admin</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="agent-link-group">
+            <label class="form-label" for="reg-agent-link">Link Agent Profile</label>
+            <select id="reg-agent-link" class="form-control">
+              <option value="">Auto-create profile</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password <span class="required">*</span></label>
+            <input type="password" id="reg-password" class="form-control" placeholder="Min. 6 chars" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm">Confirm Password <span class="required">*</span></label>
+            <input type="password" id="reg-confirm" class="form-control" placeholder="Repeat password" minlength="6" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14.5px; margin-top: 8px;">
+          <i class="fa-solid fa-user-plus"></i> Create Account & Sign In
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 22px; font-size: 13.5px; color: var(--text-muted);">
+        Already have an account? <a href="login.html" style="color: var(--primary-dark); font-weight: 700;">Sign in here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    if (localStorage.getItem('agentpro_theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+
+    // Populate existing agents in link dropdown
+    const agents = AgentProDB.getAgents();
+    const linkSelect = document.getElementById('reg-agent-link');
+    agents.forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id;
+      opt.textContent = `${a.name} (${a.id})`;
+      linkSelect.appendChild(opt);
+    });
+
+    const form = document.getElementById('signup-form');
+    const alertBox = document.getElementById('auth-alert');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const role = document.getElementById('reg-role').value;
+      const agentId = document.getElementById('reg-agent-link').value || null;
+      const pass = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+
+      if (pass !== confirm) {
+        alertBox.className = 'auth-alert error';
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>Passwords do not match. Please verify.</span>`;
+        alertBox.style.display = 'flex';
+        return;
+      }
+
+      const res = AgentAuth.register(name, email, pass, role, agentId);
+      if (res.success) {
+        window.location.href = 'dashboard.html';
+      } else {
+        alertBox.className = 'auth-alert error';
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>${res.message}</span>`;
+        alertBox.style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>

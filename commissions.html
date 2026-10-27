@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commission Management - AgentPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside id="app-sidebar"></aside>
+
+    <main class="app-main">
+      <header id="app-topbar"></header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1><i class="fa-solid fa-hand-holding-dollar" style="color: var(--primary);"></i> Commission Management & Payouts</h1>
+            <p class="page-subtitle">Track, review, calculate, and disburse commissions for first-year, renewal, bonus, and team overrides.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-primary" onclick="openModal('manual-commission-modal')">
+              <i class="fa-solid fa-plus-circle"></i> Add Manual Entry / Bonus
+            </button>
+            <a href="reports.html" class="btn btn-outline">
+              <i class="fa-solid fa-file-invoice"></i> Commission Report
+            </a>
+          </div>
+        </div>
+
+        <!-- Commission Summary KPI Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Total Commission Value</div>
+              <div class="stat-value" id="sum-total-amount" style="color: var(--primary-dark);">$0</div>
+              <div class="stat-sub"><i class="fa-solid fa-receipt"></i> Cumulative Volume</div>
+            </div>
+            <div class="stat-icon-wrap"><i class="fa-solid fa-wallet"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Disbursed (Paid)</div>
+              <div class="stat-value" id="sum-paid-amount" style="color: #10b981;">$0</div>
+              <div class="stat-sub positive"><i class="fa-solid fa-circle-check"></i> Processed Payouts</div>
+            </div>
+            <div class="stat-icon-wrap" style="background: #dcfce7; color: #15803d;"><i class="fa-solid fa-check-double"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Pending Approval / Payout</div>
+              <div class="stat-value" id="sum-pending-amount" style="color: #d97706;">$0</div>
+              <div class="stat-sub"><i class="fa-solid fa-hourglass-half"></i> Ready for Release</div>
+            </div>
+            <div class="stat-icon-wrap" style="background: #fef3c7; color: #b45309;"><i class="fa-solid fa-clock"></i></div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Filtered Statements</div>
+              <div class="stat-value" id="sum-item-count">0</div>
+              <div class="stat-sub"><i class="fa-solid fa-list-check"></i> Transactions Count</div>
+            </div>
+            <div class="stat-icon-wrap" style="background: #ede9fe; color: #6d28d9;"><i class="fa-solid fa-calculator"></i></div>
+          </div>
+        </div>
+
+        <!-- Filter Toolbar -->
+        <div class="card" style="margin-bottom: 24px; padding: 18px 20px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: center;">
+            <div>
+              <label class="form-label" style="font-size: 11px; text-transform: uppercase;">Agent</label>
+              <select id="filter-agent" class="form-control">
+                <option value="">All Agents</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label" style="font-size: 11px; text-transform: uppercase;">Commission Type</label>
+              <select id="filter-type" class="form-control">
+                <option value="">All Types</option>
+                <option value="First Year Commission">First Year Commission</option>
+                <option value="Renewal Commission">Renewal Commission</option>
+                <option value="Bonus Commission">Bonus Commission</option>
+                <option value="Team Commission">Team Commission</option>
+                <option value="Performance Bonus">Performance Bonus</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label" style="font-size: 11px; text-transform: uppercase;">Billing Month</label>
+              <select id="filter-month" class="form-control">
+                <option value="">All Months</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label" style="font-size: 11px; text-transform: uppercase;">Payment Status</label>
+              <select id="filter-status" class="form-control">
+                <option value="">All Statuses</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Commission Table -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fa-solid fa-file-lines" style="color: var(--primary);"></i>
+              Commission Transactions Ledger
+            </div>
+            <span class="badge badge-gold"><i class="fa-solid fa-sliders"></i> Configured Auto-Rates Active</span>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ref ID</th>
+                    <th>Beneficiary Agent</th>
+                    <th>Type</th>
+                    <th>Policy Source</th>
+                    <th>Premium Base</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                    <th>Billing Month</th>
+                    <th>Action / Status</th>
+                  </tr>
+                </thead>
+                <tbody id="commission-table-tbody">
+                  <!-- Loaded by js/commissions.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Manual Commission Entry Modal -->
+  <div class="modal-overlay" id="manual-commission-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-plus-circle" style="color: var(--primary);"></i> Add Manual Commission or Bonus</h3>
+        <button class="modal-close-btn" onclick="closeModal('manual-commission-modal')">&times;</button>
+      </div>
+      <form id="manual-commission-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="manual-agent-id">Select Agent <span class="required">*</span></label>
+            <select id="manual-agent-id" class="form-control" required></select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="manual-type">Commission Type <span class="required">*</span></label>
+              <select id="manual-type" class="form-control" required>
+                <option value="Bonus Commission">Bonus Commission</option>
+                <option value="Team Commission">Team Commission</option>
+                <option value="Performance Bonus">Performance Bonus</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="manual-amount">Payout Amount ($) <span class="required">*</span></label>
+              <input type="number" id="manual-amount" class="form-control" min="100" step="50" placeholder="e.g. 5000" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="manual-month">Month Period <span class="required">*</span></label>
+              <input type="month" id="manual-month" class="form-control" value="2026-10" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="manual-reference">Campaign / Memo</label>
+              <input type="text" id="manual-reference" class="form-control" placeholder="e.g. Q4 Target Milestone Bonus">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="closeModal('manual-commission-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Add Commission</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/commissions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('commissions');
+      initCommissionsPage();
+    });
+  </script>
+</body>
+</html>

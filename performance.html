@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Tracking - AgentPro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <aside id="app-sidebar"></aside>
+
+    <main class="app-main">
+      <header id="app-topbar"></header>
+
+      <div class="page-content">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1><i class="fa-solid fa-bullseye" style="color: var(--primary);"></i> Performance Monitoring & Targets</h1>
+            <p class="page-subtitle">Track sales vs quotas, analyze team benchmarks, and automatically calculate performance levels.</p>
+          </div>
+          <div class="page-actions">
+            <a href="incentives.html" class="btn btn-primary">
+              <i class="fa-solid fa-trophy"></i> View Incentive Schemes
+            </a>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-chart-column" style="color: var(--primary);"></i> Target vs Achieved Premium Comparison
+              </div>
+              <span class="badge badge-gold">Q3 Benchmark</span>
+            </div>
+            <div class="card-body">
+              <div style="position: relative; height: 260px;">
+                <canvas id="perfTrendChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Policies by Category
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="position: relative; height: 260px;">
+                <canvas id="policyTypeChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card" style="margin-bottom: 24px; padding: 18px 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+              <div>
+                <label class="form-label" style="font-size: 11px; text-transform: uppercase;">Tracking Cycle</label>
+                <select id="perf-period-filter" class="form-control" style="width: 200px;">
+                  <option value="">All Periods</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label" style="font-size: 11px; text-transform: uppercase;">Status Tier</label>
+                <select id="perf-status-filter" class="form-control" style="width: 200px;">
+                  <option value="">All Statuses</option>
+                  <option value="Achieved">Achieved (>=100%)</option>
+                  <option value="On Track">On Track (70% - 99%)</option>
+                  <option value="Behind">Behind (&lt;70%)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; font-size: 12px; color: var(--text-muted);">
+              <span><strong>Level Rules:</strong></span>
+              <span>Platinum: ≥150%</span> •
+              <span>Gold: ≥120%</span> •
+              <span>Silver: ≥100%</span> •
+              <span>Bronze: ≥70%</span> •
+              <span>Rising Star: New agent growth</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards Grid Container -->
+        <div id="perf-grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+          <!-- Loaded by js/performance.js -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/performance.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AgentApp.init('performance');
+      initPerformancePage();
+    });
+  </script>
+</body>
+</html>
